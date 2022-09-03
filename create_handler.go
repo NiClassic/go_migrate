@@ -57,19 +57,11 @@ func NewCreateCommand() *Command {
 			//OpenFile instead of Create makes sure that no existing files are truncated.
 			//This is only a theoretical case as in practice, each file has a timestamp prefix and is thus not likely
 			//to be truncated
-			f, err := os.OpenFile(upPath, os.O_CREATE|os.O_RDONLY, 0666)
+			err = createMigrationFile(upPath)
 			if err != nil {
 				return err
 			}
-			err = f.Close()
-			if err != nil {
-				return err
-			}
-			f, err = os.OpenFile(downPath, os.O_CREATE|os.O_RDONLY, 0666)
-			if err != nil {
-				return err
-			}
-			err = f.Close()
+			err = createMigrationFile(downPath)
 			if err != nil {
 				return err
 			}
@@ -85,4 +77,12 @@ func generateUpAndDownFileNames(prefix, name string) (string, string) {
 
 func generateGeneralMigrationFileName(prefix, name, suffix string) string {
 	return fmt.Sprintf("%s_%s.%s.sql", prefix, name, suffix)
+}
+
+func createMigrationFile(path string) error {
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_RDONLY, 0666)
+	if err != nil {
+		return err
+	}
+	return f.Close()
 }
