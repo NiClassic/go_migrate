@@ -54,15 +54,25 @@ func NewCreateCommand() *Command {
 			upPath, downPath := generateUpAndDownFileNames(strconv.Itoa(int(time.Now().Unix())), name)
 			upPath = path.Join(dest, upPath)
 			downPath = path.Join(dest, downPath)
-			_, err = os.Create(upPath)
+			//OpenFile instead of Create makes sure that no existing files are truncated.
+			//This is only a theoretical case as in practice, each file has a timestamp prefix and is thus not likely
+			//to be truncated
+			f, err := os.OpenFile(upPath, os.O_CREATE|os.O_RDONLY, 0666)
 			if err != nil {
 				return err
 			}
-			_, err = os.Create(downPath)
+			err = f.Close()
 			if err != nil {
 				return err
 			}
-			fmt.Printf("Created %s and %s\n", upPath, downPath)
+			f, err = os.OpenFile(downPath, os.O_CREATE|os.O_RDONLY, 0666)
+			if err != nil {
+				return err
+			}
+			err = f.Close()
+			if err != nil {
+				return err
+			}
 			return nil
 		},
 	)
