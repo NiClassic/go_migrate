@@ -18,6 +18,7 @@ It supports mysql databases.
 Available SUBCOMMANDS are:
 	
 	create		Create two timestamped migration files, one for running the migration and one for reversing the migration respectively
+	init-db		Create the migration table for the desired database
 	`
 )
 
