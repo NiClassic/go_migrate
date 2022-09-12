@@ -30,11 +30,17 @@ func main() {
 		os.Exit(0)
 	}
 	createCmd := NewCreateCommand()
+	initCmd := NewInitDbCommand()
 	switch strings.ToLower(os.Args[1]) {
 	case createCmd.Name:
 		err := createCmd.Handler(os.Args[2:])
 		if err != nil {
-			fmt.Fprint(os.Stderr, err)
+			fmt.Fprintln(os.Stderr, err)
+		}
+	case initCmd.Name:
+		err := initCmd.Handler(os.Args[2:])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
 		}
 	default:
 		fmt.Fprintf(os.Stderr, "Command %s is not a valid sub-command\n", os.Args[1])
