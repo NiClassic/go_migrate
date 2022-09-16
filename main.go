@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-//TODO: option to specify path to database folder
 //TODO: reverse migrations
 
 const (
@@ -22,9 +23,6 @@ Available SUBCOMMANDS are:
 	`
 )
 
-//migrator create create_dogs_table -e .env
-//migrator create create_dogs_table -u username -p password -d database
-
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Fprint(os.Stderr, usage)
@@ -32,6 +30,7 @@ func main() {
 	}
 	createCmd := NewCreateCommand()
 	initCmd := NewInitDbCommand()
+	upCmd := NewUpCommand()
 	switch strings.ToLower(os.Args[1]) {
 	case createCmd.Name:
 		err := createCmd.Handler(os.Args[2:])
@@ -40,6 +39,11 @@ func main() {
 		}
 	case initCmd.Name:
 		err := initCmd.Handler(os.Args[2:])
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+	case upCmd.Name:
+		err := upCmd.Handler(os.Args[2:])
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
