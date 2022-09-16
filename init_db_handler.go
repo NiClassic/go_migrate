@@ -4,10 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"flag"
-	"fmt"
-	"strings"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
 const (
@@ -36,18 +32,9 @@ func NewInitDbCommand() *Command {
 				}
 				return err
 			}
-			var c Credentials
-			if *usrPtr != "" && *pwPtr != "" {
-				c = *NewCredentials(*usrPtr, *pwPtr, *dbPtr, *portPtr, *hostPtr)
-			} else {
-				if !strings.HasSuffix(*envPtr, ".env") {
-					return fmt.Errorf("%s is not a .env file", *envPtr)
-				}
-				cr, err := LoadCredentialsCustomEnvPath(*envPtr)
-				if err != nil {
-					return err
-				}
-				c = *cr
+			c, err := CredentialsFromPointers(envPtr, usrPtr, pwPtr, dbPtr, portPtr, hostPtr)
+			if err != nil {
+				return err
 			}
 			conn, err := sql.Open("mysql", c.ToDSN())
 			if err != nil {
